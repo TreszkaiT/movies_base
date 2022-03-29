@@ -1,5 +1,6 @@
 package hu.nye.webapp.movies.controller;
 
+import hu.nye.webapp.movies.repository.MovieRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +30,13 @@ public class MovieController {
                 "Star Wars",
                 "Terminator"
         );*/
+        return List.of(
+                "Star Wars",
+                "Terminator"
+        );
+
+        MovieRepository movieRepository;
+        movieRepository.
 
     }
 }
