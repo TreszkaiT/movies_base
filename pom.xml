@@ -45,7 +45,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- UTIL -->
+        <!-- UTIL    modelmapper: automatikusan tud konvertálni egyik osztályból a másikba-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
