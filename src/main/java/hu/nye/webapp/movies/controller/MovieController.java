@@ -1,7 +1,8 @@
 package hu.nye.webapp.movies.controller;
 
+import hu.nye.webapp.movies.dto.MovieDTO;
 import hu.nye.webapp.movies.entity.Movie;
-import hu.nye.webapp.movies.repository.MovieRepository;
+import hu.nye.webapp.movies.service.MovieService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,9 +27,22 @@ public class MovieController {
     // ennek az objektumnak, mikor példányosítja.
 
     // a MovieControllernek a RestController Annotáció által lesz egy Bean-je
-    private final MovieRepository movieRepository;
 
-    public MovieController(MovieRepository movieRepository) {
+    // a MovieDTO bevezetésével ez az osztály már nem a MovieRepository-n fog függni, hanem a MovieService-en; az implementációt meg majd a Spring magától intézi, nekünk nem kell
+    // nekünk már csak a sor végén ALt+Enter, és generáltatunk egy konstruktort is hozzá automatikusan
+    //private final MovieRepository movieRepository;
+    private final MovieService movieService;
+
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
+    }
+
+    // ez pedig már a movieDTO-t fog visszaadni, és a movieService-t fog használni
+    @RequestMapping(path = "/movies", method = RequestMethod.GET)      // RequestMapping: megmondjuk, hogy ez a metódus a GET/movies  hívásra alkalmas;;;; azaz ez egy kérés Mappalése, ha bejön egy kérés, akkor azt le tudjuk mappelni erre a metódusra  CTRL+P metódusainak kilistázása
+    public List<MovieDTO> findAll(){
+        return movieService.findAll();
+    }
+    /*public MovieController(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
 
         Movie movie1 = new Movie(); // hogy legyen példaadat is
@@ -38,12 +52,12 @@ public class MovieController {
 
         movieRepository.save(movie1);   // lementi az adatbázisba
         movieRepository.save(movie2);
-    }
+    }*/
 
     // ez kezeli le az összes filmet
     // movies list a visszatérési értéke: azaz valamilyen kollekció  List<String> = filmcímek egyenlőre
-    @RequestMapping(path = "/movies", method = RequestMethod.GET)      // RequestMapping: megmondjuk, hogy ez a metódus a GET/movies  hívásra alkalmas;;;; azaz ez egy kérés Mappalése, ha bejön egy kérés, akkor azt le tudjuk mappelni erre a metódusra  CTRL+P metódusainak kilistázása
-    public List<Movie> findAll(){
+//    @RequestMapping(path = "/movies", method = RequestMethod.GET)      // RequestMapping: megmondjuk, hogy ez a metódus a GET/movies  hívásra alkalmas;;;; azaz ez egy kérés Mappalése, ha bejön egy kérés, akkor azt le tudjuk mappelni erre a metódusra  CTRL+P metódusainak kilistázása
+//    public List<Movie> findAll(){
 
         /*
         // ez csak egy statikus lista, de adatbázissal lenne jó dolgozni, így a Spring Data-t vesszük elő
@@ -56,6 +70,6 @@ public class MovieController {
         //MovieRepository movieRepository;
         //movieRepository.
 
-        return movieRepository.findAll();
-    }
+//        return movieRepository.findAll();
+//    }
 }
