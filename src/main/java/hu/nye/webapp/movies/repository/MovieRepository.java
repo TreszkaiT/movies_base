@@ -21,4 +21,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
     // és ahol ezt az interface-t használjuk, oda be fog szúrni nekünk egy implementációt, és azon keresztül tudjuk az adatbázist Query-zgetni
     // Így egy sor SQL-t se kellett megírnunk, hanem ennyi.
 public interface MovieRepository extends JpaRepository<Movie, Long> {
+
+    // itt azért saját metódusokat is tudunk definiálni, ha szeretnénk nem csak beépítetteket... a Spring Data JPA dokumentációjában utána tudunk olvasni
 }
