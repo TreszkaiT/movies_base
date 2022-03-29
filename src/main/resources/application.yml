@@ -1,3 +1,5 @@
+# mem: a h2-es adatbázisunk In-Memory adatbázis lesz = ha elindítjuk az alkalmazást -> létrejön az adatbázis,;;;;; ha leállítjuk az alkalmazást -> kitörlődik
+# h2 : a böngészőn keresztül meg tudjuk nyitni az adatbázist a h2 consolban
 spring:
   datasource:
     url: jdbc:h2:mem:movies
@@ -7,6 +9,7 @@ spring:
     console:
       enabled: true
 
+# /swagger-ui.html : -> itt nyílik meg a böngészőben: localhost:8080/swagger-ui/index.html
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

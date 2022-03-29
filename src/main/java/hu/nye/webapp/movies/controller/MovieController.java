@@ -22,10 +22,13 @@ public class MovieController {
     // movies list a visszatérési értéke: azaz valamilyen kollekció  List<String> = filmcímek egyenlőre
     @RequestMapping(path = "/movies", method = RequestMethod.GET)      // RequestMapping: megmondjuk, hogy ez a metódus a GET/movies  hívásra alkalmas;;;; azaz ez egy kérés Mappalése, ha bejön egy kérés, akkor azt le tudjuk mappelni erre a metódusra  CTRL+P metódusainak kilistázása
     public List<String> findAll(){
+
+        /*
+        // ez csak egy statikus lista, de adatbázissal lenne jó dolgozni, így a Spring Data-t vesszük elő
         return List.of(
                 "Star Wars",
                 "Terminator"
-        );
+        );*/
 
     }
 }
