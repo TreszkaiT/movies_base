@@ -4,6 +4,8 @@ import hu.nye.webapp.movies.dto.MovieDTO;
 import hu.nye.webapp.movies.entity.Movie;
 import hu.nye.webapp.movies.service.MovieService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +28,7 @@ import java.util.List;
     // a Spring tudni fogja, hogy ha beindítja az alkalmazást, akkor látja hogy itt egy RestController Annotáció, így csinál belőle egy példányt ebből az osztályból, és
     // ezután már akár tudunk is hozzá kéréseket intézni
 @RestController
+@RequestMapping(path = "/movies")
 public class MovieController {
 
     // a MovieDTO bevezetésével ez az osztály már nem a MovieRepository-n fog függni, hanem a MovieService-en; az implementációt meg majd a Spring magától intézi, nekünk nem kell
@@ -38,16 +41,21 @@ public class MovieController {
     }
 
     // ez pedig már a movieDTO-t fog visszaadni, és a movieService-t fog használni
-    @RequestMapping(path = "/movies", method = RequestMethod.GET)      // RequestMapping: megmondjuk, hogy ez a metódus a GET/movies  hívásra alkalmas;;;; azaz ez egy kérés Mappalése, ha bejön egy kérés, akkor azt le tudjuk mappelni erre a metódusra  CTRL+P metódusainak kilistázása
+    //@RequestMapping(path = "/movies", method = RequestMethod.GET)      // RequestMapping: megmondjuk, hogy ez a metódus a GET/movies  hívásra alkalmas;;;; azaz ez egy kérés Mappalése, ha bejön egy kérés, akkor azt le tudjuk mappelni erre a metódusra  CTRL+P metódusainak kilistázása
+    @RequestMapping(method = RequestMethod.GET)                         // path = "/movies",  ezt felrakva az osztály tetejére, ide már nem is kell, mert automatikusan megöröklik majd
     public List<MovieDTO> findAll(){
         return movieService.findAll();
     }
 
     // adatokat ír az adatbázisba
     // (@RequestBody MovieDTO movieDTO): ha bejön egy kérés, és volt RequestBody-ja, akkor átkonvertálja azt MovieDTO objektummá, és ezzel tudnunk dolgozni ezen metódus törzsében
-    @RequestMapping(path = "/movies", method = RequestMethod.POST)
-    public MovieDTO create(@RequestBody MovieDTO movieDTO){
-        return movieService.create(movieDTO);                           // itt meg meghívom az Implementáció create metódusát
+    //@RequestMapping(path = "/movies", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)                                         // path = "/movies",  ezt felrakva az osztály tetejére, ide már nem is kell, mert automatikusan megöröklik majd  ;;; ha ide írnék be egy path = "/get", -et akkor összeadódna, így a címe /movies/get lenne
+    public ResponseEntity<MovieDTO> create(@RequestBody MovieDTO movieDTO){                 // ResponseEntity : a HTTP válaszon tudunk módosítani vele. 200,201... úgy hogy a MovieDTO-t becsomagoljuk ebbe a ResponseEntity generikus osztályba; HTTP headereket is bele tudunk még e mellett pakolni
+        MovieDTO savedMovie = movieService.create(movieDTO);
+        return ResponseEntity.status(HttpStatus.CREATED)                                   // beállítóm a 201-es stásusz kódot: HttpStatus.CREATED
+            .body(savedMovie);                                                             // HTTP body beállítása
+        //return movieService.create(movieDTO);                                               // itt meg meghívom az Implementáció create metódusát
     }
 
 }

@@ -73,7 +73,8 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public MovieDTO create(MovieDTO movieDTO) {
         Movie movieToSave = modelMapper.map(movieDTO, Movie.class);         // ez átalakítja a MovieDTO-t Movie-ra, azaz Entity-vé
-        Movie savedMovie = movieRepository.save(movieToSave);               // ez menti el az adatbázisba, és ez vissza is adja azt az Enity-t amit elmentett; ez kell, mert a JPA mentés során automatikusan generál neki egy ID-t
+        movieToSave.setId(null);                                            // védelem, hogy ne írjuk felül a már meglévő is-jű elemeket a DB-ban. Null-nál ugyanis új id-val generálja az új rekordokat a Spring
+        Movie savedMovie = movieRepository.save(movieToSave);               // ez menti el az adatbázisba, vagy updateli is, ha már van olyan id-jű; és ez vissza is adja azt az Enity-t amit elmentett; ez kell, mert a JPA mentés során automatikusan generál neki egy ID-t
         return modelMapper.map(savedMovie, MovieDTO.class);                 // és a kapott objektumot visszaalakítom MovieDTO-vá
     }
 
