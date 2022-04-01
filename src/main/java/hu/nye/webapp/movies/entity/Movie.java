@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Set;
 
 /**
+ * ebből az osztályból -> adatbázis beli sor és tábla készítése automatikusan
+ *
  * ezzel hozzuk létre az adatbázist, és a benne lévő táblákat, fejléceket
  * hogy tudjuk használni a Spring Data JPA-t és adatbázisba dolgokat tudjunk menteni, kell készíteni egy Entity-t
  *

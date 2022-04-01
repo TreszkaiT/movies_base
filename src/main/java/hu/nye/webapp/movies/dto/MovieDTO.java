@@ -9,6 +9,8 @@ import java.util.Set;
  * ugyanazt csinálja, mint a Movie, csak nem Entity lesz, így nem lesz szükségünk a Movie.java-ban az Entity-s és JPA-s Annotációkra
  *
  * ezt az osztályt használjuk fel a MovieService-ban
+ *
+ * Mivel ez nem Entity, így már nincs szükésünk itt az Annotációkra
  */
 public class MovieDTO {
 

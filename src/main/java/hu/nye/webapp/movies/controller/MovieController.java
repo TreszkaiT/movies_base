@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
+ * I. itt kezdetben az adatbázis téma volt, de az nem ide kell igazából, így kicseréltük egy Service-re (MovieService)
+ * és a Service ad egy metódust findAll(), mely visszaadja az összes filmet. Ezt tudjuk használni a Controllerben
+ * -- MovieService.java itt folytajuk
+ *
+ * Entity-k és adatbázis művelet itt nem lehet!!! meg egy controller-ben sem
+ *
  * ezek a metódusok fogják lekezelni a kéréseket az egyes endpointokra pl. GET/movies  a https://editor.swagger.io/ -oldalon GET/POST/....
  */
 
@@ -21,18 +27,11 @@ import java.util.List;
 @RestController
 public class MovieController {
 
-    // itt field-ként vesszük fel, és generálunk egyből hozzá egy konstruktort... ez a dependency injection megvalósítása... constructor injection
-    // ekkor ha elindítjuk az alkalmazást, akkor a Spring látja majd, hogy van nekünk egy RestControllerünk, így ebből csinálni kell egy Bean-t,
-    // és azt is látja, hogy van neki egy konstruktora, ami vár egy MovieRepository -t , és a Spring az magától oda tudja adni ezt a függőséget
-    // ennek az objektumnak, mikor példányosítja.
-
-    // a MovieControllernek a RestController Annotáció által lesz egy Bean-je
-
     // a MovieDTO bevezetésével ez az osztály már nem a MovieRepository-n fog függni, hanem a MovieService-en; az implementációt meg majd a Spring magától intézi, nekünk nem kell
     // nekünk már csak a sor végén ALt+Enter, és generáltatunk egy konstruktort is hozzá automatikusan
-    //private final MovieRepository movieRepository;
-    private final MovieService movieService;
+    private final MovieService movieService;    // e felé nem kell @Autowire annotáció, mert Spring x. verzió felett már nem szükséges, ha az osztály felett ott az annotáció kitéve (RestContorller)
 
+            // ide, vagy egy sorral fentebb nem kell az @Autowired Annotáció, mert Spring x. verzió felett már megnézi az osztály Annotációját @RestController, és tudja, hogy annak a feladata behzúni ezeket, és ez a konstruktor egyértelmű, és egyszerű
     public MovieController(MovieService movieService) {
         this.movieService = movieService;
     }
@@ -42,7 +41,18 @@ public class MovieController {
     public List<MovieDTO> findAll(){
         return movieService.findAll();
     }
-    /*public MovieController(MovieRepository movieRepository) {
+    /*
+
+    // itt field-ként vesszük fel, és generálunk egyből hozzá egy konstruktort... ez a dependency injection megvalósítása... constructor injection
+    // ekkor ha elindítjuk az alkalmazást, akkor a Spring látja majd, hogy van nekünk egy RestControllerünk, így ebből csinálni kell egy Bean-t,
+    // és azt is látja, hogy van neki egy konstruktora, ami vár egy MovieRepository -t , és a Spring az magától oda tudja adni ezt a függőséget
+    // ennek az objektumnak, mikor példányosítja.
+
+    // a MovieControllernek a RestController Annotáció által lesz egy Bean-je
+
+    private final MovieRepository movieRepository;
+
+    public MovieController(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
 
         Movie movie1 = new Movie(); // hogy legyen példaadat is
