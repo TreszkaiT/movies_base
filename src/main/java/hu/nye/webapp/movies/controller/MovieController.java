@@ -43,8 +43,8 @@ public class MovieController {
     // ez pedig már a movieDTO-t fog visszaadni, és a movieService-t fog használni
     //@RequestMapping(path = "/movies", method = RequestMethod.GET)      // RequestMapping: megmondjuk, hogy ez a metódus a GET/movies  hívásra alkalmas;;;; azaz ez egy kérés Mappalése, ha bejön egy kérés, akkor azt le tudjuk mappelni erre a metódusra  CTRL+P metódusainak kilistázása
     @RequestMapping(method = RequestMethod.GET)                         // path = "/movies",  ezt felrakva az osztály tetejére, ide már nem is kell, mert automatikusan megöröklik majd
-    public List<MovieDTO> findAll(){
-        return movieService.findAll();
+    public ResponseEntity<List<MovieDTO>> findAll(){
+        return ResponseEntity.ok(movieService.findAll());
     }
 
     // adatokat ír az adatbázisba
@@ -53,7 +53,7 @@ public class MovieController {
     @RequestMapping(method = RequestMethod.POST)                                         // path = "/movies",  ezt felrakva az osztály tetejére, ide már nem is kell, mert automatikusan megöröklik majd  ;;; ha ide írnék be egy path = "/get", -et akkor összeadódna, így a címe /movies/get lenne
     public ResponseEntity<MovieDTO> create(@RequestBody MovieDTO movieDTO){                 // ResponseEntity : a HTTP válaszon tudunk módosítani vele. 200,201... úgy hogy a MovieDTO-t becsomagoljuk ebbe a ResponseEntity generikus osztályba; HTTP headereket is bele tudunk még e mellett pakolni
         MovieDTO savedMovie = movieService.create(movieDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)                                   // beállítóm a 201-es stásusz kódot: HttpStatus.CREATED
+        return ResponseEntity.status(HttpStatus.CREATED)                                   // beállítom a 201-es stásusz kódot: HttpStatus.CREATED
             .body(savedMovie);                                                             // HTTP body beállítása
         //return movieService.create(movieDTO);                                               // itt meg meghívom az Implementáció create metódusát
     }
