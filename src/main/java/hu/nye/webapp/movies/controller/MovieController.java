@@ -81,4 +81,11 @@ public class MovieController {
         return ResponseEntity.ok(updatedMovie);                                                 // 200-as hiba
     }
 
+    // id alapján törlés
+    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> delete(@PathVariable Long id){                                  // <Void>  : üres response Entity-t ad vissza, így ezen tudjuk állítgatni a HTTP status kódot
+        movieService.delete(id);
+        return ResponseEntity.noContent().build();                                              // 204-es HTTP status code
+    }
+
 }

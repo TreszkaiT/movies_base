@@ -99,6 +99,18 @@ public class MovieServiceImpl implements MovieService {
         return modelMapper.map(saveMovie, movieDTO.getClass());                 // visszaadjuk MovieDTO-ként
     }
 
+    @Override
+    public void delete(Long id) {
+        Optional<Movie> optionalMovie = movieRepository.findById(id);           // előbb megkeresem, hogy van-e ilyen film
+
+        if (optionalMovie.isPresent()){                                         // ha ez létezik ilyen movie
+            Movie movieToDelete = optionalMovie.get();                          // optionalMovie.get(); :: kicsomagolom a get()-el
+            movieRepository.delete(movieToDelete);                              // Entity-t átadva törli
+        } else {
+            throw new RuntimeException();
+        }
+    }
+
     // tehát mégegyszer:
     // a Service lehív az adatbázishoz
     // a movieRepository által megkaptuk az összes filmet, ami benne van

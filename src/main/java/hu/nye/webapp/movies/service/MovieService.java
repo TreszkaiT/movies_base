@@ -37,5 +37,8 @@ public interface MovieService {
     // film id alapján updatele
     MovieDTO update(MovieDTO movieDTO);
 
+    // delete
+    void delete(Long id);
+
 
 }
