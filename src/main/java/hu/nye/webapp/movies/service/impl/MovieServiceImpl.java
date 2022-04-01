@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -76,6 +77,26 @@ public class MovieServiceImpl implements MovieService {
         movieToSave.setId(null);                                            // védelem, hogy ne írjuk felül a már meglévő is-jű elemeket a DB-ban. Null-nál ugyanis új id-val generálja az új rekordokat a Spring
         Movie savedMovie = movieRepository.save(movieToSave);               // ez menti el az adatbázisba, vagy updateli is, ha már van olyan id-jű; és ez vissza is adja azt az Enity-t amit elmentett; ez kell, mert a JPA mentés során automatikusan generál neki egy ID-t
         return modelMapper.map(savedMovie, MovieDTO.class);                 // és a kapott objektumot visszaalakítom MovieDTO-vá
+    }
+
+    @Override
+    public Optional<MovieDTO> findById(Long id) {
+        Optional<Movie> optionalMovie = movieRepository.findById(id);        // Optional<Movie> :  a Move Entity-t becsomagolja egy Optional generikus metódusba. A nullkezeléssel kapcsolatos dolgokat meg tudunk oldani (if(null)-al így már nem kell fogalalkozni)... keresékeknél használható, hoy megtaláltunk-e valamit vagy sem
+        return optionalMovie.map(movie -> modelMapper.map(movie, MovieDTO.class));                                    // Movie Entity -> MovieDTO  azaz, optionalMovie.map(movie -> ha itt szerepel egy movie, ami nem null, azaz nem üres, akkor alakítsd át: modelMapper.map(movie, MovieDTO.class)
+    }
+
+    @Override
+    public MovieDTO update(MovieDTO movieDTO) {
+        Long id = movieDTO.getId();                                             // létezik-e már ilyen id, mert ha nem, akkor új sort szúrna be, és ezt nem szeretnénk
+        Optional<Movie> optionalMovie = movieRepository.findById(id);           // movieRepository-val megpróbálom megkerestetni az id-t
+
+        if (optionalMovie.isEmpty()){
+            throw new RuntimeException();                                       // ezt az Exceptiont nem kötelező elkapnunk, ezért jó  ->>így ezen a ponton megszakad a metódus futása... ez elkezd felfelé gyűrűzni, és valahol a Spring csinál belőle egy általános hibaüzenetet
+        }
+
+        Movie movieToUpdate = modelMapper.map(movieDTO, Movie.class);           // MovieDTO -> Movie
+        Movie saveMovie = movieRepository.save(movieToUpdate);                  // elmentem a Respository segítségével
+        return modelMapper.map(saveMovie, movieDTO.getClass());                 // visszaadjuk MovieDTO-ként
     }
 
     // tehát mégegyszer:

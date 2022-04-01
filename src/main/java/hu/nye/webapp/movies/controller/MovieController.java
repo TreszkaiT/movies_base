@@ -6,11 +6,13 @@ import hu.nye.webapp.movies.service.MovieService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * I. itt kezdetben az adatbázis téma volt, de az nem ide kell igazából, így kicseréltük egy Service-re (MovieService)
@@ -56,6 +58,27 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.CREATED)                                   // beállítom a 201-es stásusz kódot: HttpStatus.CREATED
             .body(savedMovie);                                                             // HTTP body beállítása
         //return movieService.create(movieDTO);                                               // itt meg meghívom az Implementáció create metódusát
+    }
+
+    // id alapján kérjük le a filmeket
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET)                                 // /{id}  kapott id
+    public ResponseEntity<MovieDTO> findById(@PathVariable(name = "id") Long identifier){          // @PathVariable Long id ezzel a kapott /{id}-t tudjuk kezelni ezen metóduson belül
+        Optional<MovieDTO> optionalMovieDTO = movieService.findById(identifier);
+
+        ResponseEntity<MovieDTO> response;
+        if (optionalMovieDTO.isPresent()) {                                                     // ha van benne bármilyen érték, azaz megtalálltuk a filmet
+            response = ResponseEntity.ok(optionalMovieDTO.get());                               // akkor kiszedem az értékét
+        } else {
+            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);                  // amúgy meg nem találtam meg
+        }
+        return null;
+    }
+
+    // frissítés id alapján
+    @RequestMapping(method = RequestMethod.PUT)
+    public ResponseEntity<MovieDTO> update(@RequestBody MovieDTO movieDTO){                     // @RequestBody MovieDTO movieDTO:  a Request Body-ban várja az infót
+        MovieDTO updatedMovie = movieService.update(movieDTO);
+        return ResponseEntity.ok(updatedMovie);                                                 // 200-as hiba
     }
 
 }

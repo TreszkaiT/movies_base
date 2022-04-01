@@ -3,6 +3,7 @@ package hu.nye.webapp.movies.service;
 import hu.nye.webapp.movies.dto.MovieDTO;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Ez csak egy Interface, ami jó dolog,
@@ -29,4 +30,12 @@ public interface MovieService {
 
     // film mentése. A létrehozott filmet szertnénk visszaadni az EndPoint felé -> MovieDTO visszatérési értéke lesz az elején
     MovieDTO create(MovieDTO movieDTO);
+
+    // film id alapján való keresése
+    Optional<MovieDTO> findById(Long id);
+
+    // film id alapján updatele
+    MovieDTO update(MovieDTO movieDTO);
+
+
 }
