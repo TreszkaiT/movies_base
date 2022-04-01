@@ -70,6 +70,13 @@ public class MovieServiceImpl implements MovieService {
         //return null;
     }
 
+    @Override
+    public MovieDTO create(MovieDTO movieDTO) {
+        Movie movieToSave = modelMapper.map(movieDTO, Movie.class);         // ez átalakítja a MovieDTO-t Movie-ra, azaz Entity-vé
+        Movie savedMovie = movieRepository.save(movieToSave);               // ez menti el az adatbázisba, és ez vissza is adja azt az Enity-t amit elmentett; ez kell, mert a JPA mentés során automatikusan generál neki egy ID-t
+        return modelMapper.map(savedMovie, MovieDTO.class);                 // és a kapott objektumot visszaalakítom MovieDTO-vá
+    }
+
     // tehát mégegyszer:
     // a Service lehív az adatbázishoz
     // a movieRepository által megkaptuk az összes filmet, ami benne van

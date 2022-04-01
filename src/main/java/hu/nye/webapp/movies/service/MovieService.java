@@ -26,4 +26,7 @@ public interface MovieService {
     // <Movie> -t nem írhatok ide, mert akkor Entity-k lennének továbbítva a MovieController.java-nak, és nagyon hozzákötném ezt az interfacet a Movie.java adathoz, ami nem jó,
     // így létre kell hozni egy dto-t. Data Transfer Object
     List<MovieDTO> findAll();
+
+    // film mentése. A létrehozott filmet szertnénk visszaadni az EndPoint felé -> MovieDTO visszatérési értéke lesz az elején
+    MovieDTO create(MovieDTO movieDTO);
 }
