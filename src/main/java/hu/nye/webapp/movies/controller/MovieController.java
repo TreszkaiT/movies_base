@@ -43,8 +43,8 @@ public class MovieController {
     }
 
     // ez pedig már a movieDTO-t fog visszaadni, és a movieService-t fog használni
-    //@RequestMapping(path = "/movies", method = RequestMethod.GET)      // RequestMapping: megmondjuk, hogy ez a metódus a GET/movies  hívásra alkalmas;;;; azaz ez egy kérés Mappalése, ha bejön egy kérés, akkor azt le tudjuk mappelni erre a metódusra  CTRL+P metódusainak kilistázása
-    @RequestMapping(method = RequestMethod.GET)                         // path = "/movies",  ezt felrakva az osztály tetejére, ide már nem is kell, mert automatikusan megöröklik majd
+    //@RequestMapping(path = "/movies", method = RequestMethod.GET)                            // RequestMapping: megmondjuk, hogy ez a metódus a GET/movies  hívásra alkalmas;;;; azaz ez egy kérés Mappalése, ha bejön egy kérés, akkor azt le tudjuk mappelni erre a metódusra  CTRL+P metódusainak kilistázása
+    @RequestMapping(method = RequestMethod.GET)                                             // path = "/movies",  ezt felrakva az osztály tetejére, ide már nem is kell, mert automatikusan megöröklik majd
     public ResponseEntity<List<MovieDTO>> findAll(){
         return ResponseEntity.ok(movieService.findAll());
     }
@@ -52,17 +52,17 @@ public class MovieController {
     // adatokat ír az adatbázisba
     // (@RequestBody MovieDTO movieDTO): ha bejön egy kérés, és volt RequestBody-ja, akkor átkonvertálja azt MovieDTO objektummá, és ezzel tudnunk dolgozni ezen metódus törzsében
     //@RequestMapping(path = "/movies", method = RequestMethod.POST)
-    @RequestMapping(method = RequestMethod.POST)                                         // path = "/movies",  ezt felrakva az osztály tetejére, ide már nem is kell, mert automatikusan megöröklik majd  ;;; ha ide írnék be egy path = "/get", -et akkor összeadódna, így a címe /movies/get lenne
-    public ResponseEntity<MovieDTO> create(@RequestBody MovieDTO movieDTO){                 // ResponseEntity : a HTTP válaszon tudunk módosítani vele. 200,201... úgy hogy a MovieDTO-t becsomagoljuk ebbe a ResponseEntity generikus osztályba; HTTP headereket is bele tudunk még e mellett pakolni
+    @RequestMapping(method = RequestMethod.POST)                                             // path = "/movies",  ezt felrakva az osztály tetejére, ide már nem is kell, mert automatikusan megöröklik majd  ;;; ha ide írnék be egy path = "/get", -et akkor összeadódna, így a címe /movies/get lenne
+    public ResponseEntity<MovieDTO> create(@RequestBody MovieDTO movieDTO){                     // ResponseEntity : a HTTP válaszon tudunk módosítani vele. 200,201... úgy hogy a MovieDTO-t becsomagoljuk ebbe a ResponseEntity generikus osztályba; HTTP headereket is bele tudunk még e mellett pakolni
         MovieDTO savedMovie = movieService.create(movieDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)                                   // beállítom a 201-es stásusz kódot: HttpStatus.CREATED
-            .body(savedMovie);                                                             // HTTP body beállítása
-        //return movieService.create(movieDTO);                                               // itt meg meghívom az Implementáció create metódusát
+        return ResponseEntity.status(HttpStatus.CREATED)                                        // beállítom a 201-es stásusz kódot: HttpStatus.CREATED
+            .body(savedMovie);                                                                  // HTTP body beállítása
+        //return movieService.create(movieDTO);                                                 // itt meg meghívom az Implementáció create metódusát
     }
 
     // id alapján kérjük le a filmeket
-    @RequestMapping(path = "/{id}", method = RequestMethod.GET)                                 // /{id}  kapott id
-    public ResponseEntity<MovieDTO> findById(@PathVariable(name = "id") Long identifier){          // @PathVariable Long id ezzel a kapott /{id}-t tudjuk kezelni ezen metóduson belül
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET)                              // /{id}  kapott id
+    public ResponseEntity<MovieDTO> findById(@PathVariable(name = "id") Long identifier){       // @PathVariable Long id ezzel a kapott /{id}-t tudjuk kezelni ezen metóduson belül
         Optional<MovieDTO> optionalMovieDTO = movieService.findById(identifier);
 
         ResponseEntity<MovieDTO> response;

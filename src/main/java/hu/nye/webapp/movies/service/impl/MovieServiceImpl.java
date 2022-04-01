@@ -2,6 +2,7 @@ package hu.nye.webapp.movies.service.impl;
 
 import hu.nye.webapp.movies.dto.MovieDTO;
 import hu.nye.webapp.movies.entity.Movie;
+import hu.nye.webapp.movies.exception.MovieNotFoundException;
 import hu.nye.webapp.movies.repository.MovieRepository;
 import hu.nye.webapp.movies.service.MovieService;
 import org.modelmapper.ModelMapper;
@@ -65,23 +66,23 @@ public class MovieServiceImpl implements MovieService {
 
         // vagy végigmegyek for ciklussal a List-án, vagy inkább egyszerűbben csináljuk Stream-el, így veszem a java streamAPI-ját, és a Movie-kat beleteszem a stream-be, és az ősszes elemre végrehajtok egy map-pelést; azaz átlakítom mássá az elemeket
         return movieList.stream()
-                .map(movie -> modelMapper.map(movie, MovieDTO.class))   // movie adatot MovieDTO.class osztályba akarom alakítani
-                .collect(Collectors.toList());                          // és ezek után ezzel a művelettel begyűjtöm egy listába. Majd gyakorlatilag ezeket vissza is tudom már így adni a return-t eléírva
+                .map(movie -> modelMapper.map(movie, MovieDTO.class))           // movie adatot MovieDTO.class osztályba akarom alakítani
+                .collect(Collectors.toList());                                  // és ezek után ezzel a művelettel begyűjtöm egy listába. Majd gyakorlatilag ezeket vissza is tudom már így adni a return-t eléírva
 
         //return null;
     }
 
     @Override
     public MovieDTO create(MovieDTO movieDTO) {
-        Movie movieToSave = modelMapper.map(movieDTO, Movie.class);         // ez átalakítja a MovieDTO-t Movie-ra, azaz Entity-vé
-        movieToSave.setId(null);                                            // védelem, hogy ne írjuk felül a már meglévő is-jű elemeket a DB-ban. Null-nál ugyanis új id-val generálja az új rekordokat a Spring
-        Movie savedMovie = movieRepository.save(movieToSave);               // ez menti el az adatbázisba, vagy updateli is, ha már van olyan id-jű; és ez vissza is adja azt az Enity-t amit elmentett; ez kell, mert a JPA mentés során automatikusan generál neki egy ID-t
-        return modelMapper.map(savedMovie, MovieDTO.class);                 // és a kapott objektumot visszaalakítom MovieDTO-vá
+        Movie movieToSave = modelMapper.map(movieDTO, Movie.class);             // ez átalakítja a MovieDTO-t Movie-ra, azaz Entity-vé
+        movieToSave.setId(null);                                                // védelem, hogy ne írjuk felül a már meglévő is-jű elemeket a DB-ban. Null-nál ugyanis új id-val generálja az új rekordokat a Spring
+        Movie savedMovie = movieRepository.save(movieToSave);                   // ez menti el az adatbázisba, vagy updateli is, ha már van olyan id-jű; és ez vissza is adja azt az Enity-t amit elmentett; ez kell, mert a JPA mentés során automatikusan generál neki egy ID-t
+        return modelMapper.map(savedMovie, MovieDTO.class);                     // és a kapott objektumot visszaalakítom MovieDTO-vá
     }
 
     @Override
     public Optional<MovieDTO> findById(Long id) {
-        Optional<Movie> optionalMovie = movieRepository.findById(id);        // Optional<Movie> :  a Move Entity-t becsomagolja egy Optional generikus metódusba. A nullkezeléssel kapcsolatos dolgokat meg tudunk oldani (if(null)-al így már nem kell fogalalkozni)... keresékeknél használható, hoy megtaláltunk-e valamit vagy sem
+        Optional<Movie> optionalMovie = movieRepository.findById(id);           // Optional<Movie> :  a Move Entity-t becsomagolja egy Optional generikus metódusba. A nullkezeléssel kapcsolatos dolgokat meg tudunk oldani (if(null)-al így már nem kell fogalalkozni)... keresékeknél használható, hoy megtaláltunk-e valamit vagy sem
         return optionalMovie.map(movie -> modelMapper.map(movie, MovieDTO.class));                                    // Movie Entity -> MovieDTO  azaz, optionalMovie.map(movie -> ha itt szerepel egy movie, ami nem null, azaz nem üres, akkor alakítsd át: modelMapper.map(movie, MovieDTO.class)
     }
 
@@ -91,7 +92,8 @@ public class MovieServiceImpl implements MovieService {
         Optional<Movie> optionalMovie = movieRepository.findById(id);           // movieRepository-val megpróbálom megkerestetni az id-t
 
         if (optionalMovie.isEmpty()){
-            throw new RuntimeException();                                       // ezt az Exceptiont nem kötelező elkapnunk, ezért jó  ->>így ezen a ponton megszakad a metódus futása... ez elkezd felfelé gyűrűzni, és valahol a Spring csinál belőle egy általános hibaüzenetet
+            //throw new RuntimeException();                                       // ezt az Exceptiont nem kötelező elkapnunk, ezért jó  ->>így ezen a ponton megszakad a metódus futása... ez elkezd felfelé gyűrűzni, és valahol a Spring csinál belőle egy általános hibaüzenetet
+            throw new MovieNotFoundException("Movie not found with id="+id);
         }
 
         Movie movieToUpdate = modelMapper.map(movieDTO, Movie.class);           // MovieDTO -> Movie
@@ -107,7 +109,8 @@ public class MovieServiceImpl implements MovieService {
             Movie movieToDelete = optionalMovie.get();                          // optionalMovie.get(); :: kicsomagolom a get()-el
             movieRepository.delete(movieToDelete);                              // Entity-t átadva törli
         } else {
-            throw new RuntimeException();
+            //throw new RuntimeException();                                     // ezen általános Except. helyett felveszek egy sajátot, az exception csomagba
+            throw new MovieNotFoundException("Movie not found with id="+id);    // de itt így még csak a terminálban írja ki ezt a hibát, így csinálunk egy ControllerAdvice-t, ami elkapja a Controllerből kirepülő Exceptiont
         }
     }
 

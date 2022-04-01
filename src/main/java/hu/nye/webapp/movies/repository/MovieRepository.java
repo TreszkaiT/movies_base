@@ -23,4 +23,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     // itt azért saját metódusokat is tudunk definiálni, ha szeretnénk nem csak beépítetteket... a Spring Data JPA dokumentációjában utána tudunk olvasni
+    // List<User> findByEmailAddressAndLastName(String emailAddress, String lastName);          // And miatt a metódus névből a Spring ki tudja generálni akár az SQL Query-t is!!! docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods
 }
