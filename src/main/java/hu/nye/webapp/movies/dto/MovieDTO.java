@@ -1,7 +1,11 @@
 package hu.nye.webapp.movies.dto;
 
 import javax.persistence.ElementCollection;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -15,19 +19,36 @@ import java.util.Set;
 public class MovieDTO {
 
     private Long id;
+    @NotBlank                       // validáció, nem lehet nulla az értéke, azaz mindenképp meg kell adni a formon felvételkor
     private String title;
     private String tagline;
     private double voteAverage;
     private int voteCount;
     private Date releaseDate;
+    @NotBlank                       // a validációt ki kell váltani, így a MovieControllerben
     private String posterPath;
     private String overview;
+    @Min(value=0)
     private int budget;
     private int revenue;
     private Set<String> genres;
+    @NotNull                            // csak objektum típusú mezőre tehetem -> ezért a nagybetűs Integer
     private Integer runtime;
 
     public MovieDTO() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MovieDTO movieDTO = (MovieDTO) o;
+        return Double.compare(movieDTO.voteAverage, voteAverage) == 0 && voteCount == movieDTO.voteCount && budget == movieDTO.budget && revenue == movieDTO.revenue && Objects.equals(id, movieDTO.id) && Objects.equals(title, movieDTO.title) && Objects.equals(tagline, movieDTO.tagline) && Objects.equals(releaseDate, movieDTO.releaseDate) && Objects.equals(posterPath, movieDTO.posterPath) && Objects.equals(overview, movieDTO.overview) && Objects.equals(genres, movieDTO.genres) && Objects.equals(runtime, movieDTO.runtime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, tagline, voteAverage, voteCount, releaseDate, posterPath, overview, budget, revenue, genres, runtime);
     }
 
     public Long getId() {

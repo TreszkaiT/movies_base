@@ -1,6 +1,8 @@
 package hu.nye.webapp.movies.controller;
 
+import hu.nye.webapp.movies.exception.InvalidMovieException;
 import hu.nye.webapp.movies.exception.MovieNotFoundException;
+import hu.nye.webapp.movies.response.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,5 +19,12 @@ public class MovieControllerAdvice {
     @ExceptionHandler(value = MovieNotFoundException.class)                                                 // Ebből tudja, hogy Exceptiont kell kezelnie;;  ő csak ezért felelős : MovieNotFoundException.class
     public ResponseEntity<Void> handleMovieNotFoundException(){
         return ResponseEntity.badRequest().build();                                                         // 404-es HTTP status code;   build() : üres response body-val
+    }
+
+    @ExceptionHandler(value = InvalidMovieException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidMovieException(InvalidMovieException exception){      // az Exceptiont úgy kapom el, hogy ide beírom paraméterként
+        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+
     }
 }

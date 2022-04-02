@@ -2,15 +2,23 @@ package hu.nye.webapp.movies.controller;
 
 import hu.nye.webapp.movies.dto.MovieDTO;
 import hu.nye.webapp.movies.entity.Movie;
+import hu.nye.webapp.movies.exception.InvalidMovieException;
 import hu.nye.webapp.movies.service.MovieService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.Binding;
+import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +41,8 @@ import java.util.Optional;
 @RequestMapping(path = "/movies")
 public class MovieController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieController.class);        // az osztályhoz elkérek egy loggert,
+
     // a MovieDTO bevezetésével ez az osztály már nem a MovieRepository-n fog függni, hanem a MovieService-en; az implementációt meg majd a Spring magától intézi, nekünk nem kell
     // nekünk már csak a sor végén ALt+Enter, és generáltatunk egy konstruktort is hozzá automatikusan
     private final MovieService movieService;    // e felé nem kell @Autowire annotáció, mert Spring x. verzió felett már nem szükséges, ha az osztály felett ott az annotáció kitéve (RestContorller)
@@ -53,7 +63,9 @@ public class MovieController {
     // (@RequestBody MovieDTO movieDTO): ha bejön egy kérés, és volt RequestBody-ja, akkor átkonvertálja azt MovieDTO objektummá, és ezzel tudnunk dolgozni ezen metódus törzsében
     //@RequestMapping(path = "/movies", method = RequestMethod.POST)
     @RequestMapping(method = RequestMethod.POST)                                             // path = "/movies",  ezt felrakva az osztály tetejére, ide már nem is kell, mert automatikusan megöröklik majd  ;;; ha ide írnék be egy path = "/get", -et akkor összeadódna, így a címe /movies/get lenne
-    public ResponseEntity<MovieDTO> create(@RequestBody MovieDTO movieDTO){                     // ResponseEntity : a HTTP válaszon tudunk módosítani vele. 200,201... úgy hogy a MovieDTO-t becsomagoljuk ebbe a ResponseEntity generikus osztályba; HTTP headereket is bele tudunk még e mellett pakolni
+    public ResponseEntity<MovieDTO> create(@RequestBody @Valid MovieDTO movieDTO, BindingResult bindingResult){      // ResponseEntity : a HTTP válaszon tudunk módosítani vele. 200,201... úgy hogy a MovieDTO-t becsomagoljuk ebbe a ResponseEntity generikus osztályba; HTTP headereket is bele tudunk még e mellett pakolni   ;;;  @Valid a MovieDTO-ban használja így a validációt  ;;  , BindingResult bindingResult  a validációs hibákat ebbe teszi bele, és mi azokat le tudjuk innen kérni
+        checkErrors(bindingResult);                                                             // alul alapmetódust írunk a validációs hibák lekezelésére
+
         MovieDTO savedMovie = movieService.create(movieDTO);
         return ResponseEntity.status(HttpStatus.CREATED)                                        // beállítom a 201-es stásusz kódot: HttpStatus.CREATED
             .body(savedMovie);                                                                  // HTTP body beállítása
@@ -76,7 +88,9 @@ public class MovieController {
 
     // frissítés id alapján
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<MovieDTO> update(@RequestBody MovieDTO movieDTO){                     // @RequestBody MovieDTO movieDTO:  a Request Body-ban várja az infót
+    public ResponseEntity<MovieDTO> update(@RequestBody @Valid MovieDTO movieDTO, BindingResult bindingResult){                     // @RequestBody MovieDTO movieDTO:  a Request Body-ban várja az infót
+        checkErrors(bindingResult);                                                             // alul alapmetódust írunk a validációs hibák lekezelésére
+
         MovieDTO updatedMovie = movieService.update(movieDTO);
         return ResponseEntity.ok(updatedMovie);                                                 // 200-as hiba
     }
@@ -88,4 +102,20 @@ public class MovieController {
         return ResponseEntity.noContent().build();                                              // 204-es HTTP status code
     }
 
+    // validáció hibáinak kiíratásához egy segésmetódus felülre POST-ba
+    private void checkErrors(BindingResult bindingResult){
+        LOGGER.info("bindingResult has errors = {}", bindingResult.hasErrors());                // a stringet kiírja {}-ebbe meg behettesíti ezt bindingResult.hasErrors() hogy van-e hiba
+        LOGGER.info("errors = {}", bindingResult.getAllErrors());                               // kiírjuk az összes hibát, amit csak talál   a hibaválaszt a response package-be tesszük bele
+        // itt dobunk egy Exceptiont, mely a controllerAdvice-ben lévő hibát fogja meg,, ehhez kell egy Invalid
+
+        if(bindingResult.hasErrors()){
+            List<String> messages = new ArrayList<>();                                          // listát hozok létre
+
+            for(FieldError fieldError : bindingResult.getFieldError()){
+                messages.add(fieldError.getField() + " - " + fieldError.getDefaultMessage());  // majd kiírja, melyik field, és feltöltöm a hibákkal
+            }
+
+            throw new InvalidMovieException("Invalid movie", messages);                         // ha hibát látok, akkor dobok egy Exceptiont, ami a hiba okát is tartalmazza
+        }
+    }
 }
