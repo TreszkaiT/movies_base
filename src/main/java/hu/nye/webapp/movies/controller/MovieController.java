@@ -4,17 +4,13 @@ import hu.nye.webapp.movies.dto.MovieDTO;
 import hu.nye.webapp.movies.entity.Movie;
 import hu.nye.webapp.movies.exception.InvalidMovieException;
 import hu.nye.webapp.movies.service.MovieService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.naming.Binding;
 import javax.validation.Valid;
